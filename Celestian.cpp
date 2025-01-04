@@ -1,5 +1,6 @@
 // Created by Eternity_boundary on Jan 4,2025
 #include "Celestian.h"
+#include "Practice.h"
 #include "ui_Celestian.h"
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -12,7 +13,8 @@
 #include <QRegularExpression>
 #include <QTimer>
 
-int Celestian::userId = -1; // 初始化 userId
+qint64 Celestian::userId = -1; // 初始化 userId
+int Celestian::currentGroupId = -1;// 初始化 currentGroupId
 
 Celestian::Celestian(QWidget* parent)
 	: QMainWindow(parent)
@@ -23,6 +25,8 @@ Celestian::Celestian(QWidget* parent)
 
 	connect(ui->pushButton, &QPushButton::clicked, this, &Celestian::on_pushButton_clicked);
 	connect(networkManager, &QNetworkAccessManager::finished, this, &Celestian::handleApiResponse);
+	connect(ui->tableWidget, &QTableWidget::itemDoubleClicked, this, &Celestian::onTableItemDoubleClicked);
+	connect(ui->practice, &QPushButton::clicked, this, &Celestian::onPracticeButtonClicked);
 
 	startHttpServer();
 	getLoginInfo(); // 程序启动时请求 login info
@@ -37,9 +41,19 @@ Celestian::~Celestian()
 	delete ui;
 }
 
-int Celestian::getUserId()
+qint64 Celestian::getUserId()
 {
 	return userId;
+}
+
+int Celestian::getCurrentGroupId()
+{
+	return currentGroupId;
+}
+
+void Celestian::setCurrentGroupId(int id)
+{
+	currentGroupId = id;
 }
 
 void Celestian::on_pushButton_clicked()
@@ -54,6 +68,46 @@ void Celestian::on_pushButton_clicked()
 	networkManager->post(request, QJsonDocument(requestBody).toJson());
 }
 
+QString Celestian::processServerReport(const QByteArray& requestData)
+{
+	int jsonStartIndex = requestData.indexOf("\r\n\r\n") + 4;
+	if (jsonStartIndex <= 4 || jsonStartIndex >= requestData.size()) {
+		qWarning() << "Failed to extract JSON data from request";
+		return QString();
+	}
+
+	QByteArray jsonData = requestData.mid(jsonStartIndex);
+	qDebug() << "Extracted JSON data:" << jsonData;
+
+	QJsonParseError parseError;
+	QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
+	if (parseError.error != QJsonParseError::NoError || !jsonDoc.isObject()) {
+		qWarning() << "Failed to parse JSON data:" << parseError.errorString();
+		return QString();
+	}
+
+	QJsonObject jsonObj = jsonDoc.object();
+	QString postType = jsonObj.value("post_type").toString();
+
+	if (postType == "message") {
+		QString rawMessage = QString::fromUtf8(jsonObj.value("raw_message").toString().toUtf8());
+		qDebug() << "Parsed message from server:" << rawMessage;
+		return rawMessage;  // 返回格式化消息
+	}
+	else if (postType == "meta_event") {
+		QString metaEventType = jsonObj.value("meta_event_type").toString();
+		if (metaEventType == "heartbeat") {
+			qDebug() << "Heartbeat event received";
+			updateStatusIndicator(true);
+		}
+	}
+	else {
+		qDebug() << "Received unknown post_type or invalid format";
+	}
+
+	return QString();
+}
+
 void Celestian::startHttpServer()
 {
 	QTcpServer* server = new QTcpServer(this);
@@ -65,48 +119,16 @@ void Celestian::startHttpServer()
 				QByteArray requestData = client->readAll();
 				qDebug() << "Received raw request data:" << requestData;
 
-				int jsonStartIndex = requestData.indexOf("\r\n\r\n") + 4;
-				if (jsonStartIndex > 4 && jsonStartIndex < requestData.size()) {
-					QByteArray jsonData = requestData.mid(jsonStartIndex);
-					qDebug() << "Extracted JSON data:" << jsonData;
-
-					QJsonParseError parseError;
-					QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
-					if (parseError.error == QJsonParseError::NoError && jsonDoc.isObject()) {
-						QJsonObject jsonObj = jsonDoc.object();
-						QString postType = jsonObj.value("post_type").toString();
-						QString metaEventType = jsonObj.value("meta_event_type").toString();
-
-						qDebug() << "Parsed JSON:"
-							<< "\n  post_type:" << postType
-							<< "\n  meta_event_type:" << metaEventType;
-
-						if (postType == "meta_event" && metaEventType == "heartbeat") {
-							qDebug() << "Heartbeat event received";
-							updateStatusIndicator(true);
-
-							if (jsonObj.contains("interval")) {
-								int interval = jsonObj.value("interval").toInt();
-								qDebug() << "Heartbeat interval (ms):" << interval;
-							}
-						}
-						else {
-							qDebug() << "Received non-heartbeat event or invalid format";
-						}
-					}
-					else {
-						qDebug() << "Failed to parse extracted JSON data:" << parseError.errorString();
-					}
-				}
-				else {
-					qDebug() << "Failed to extract JSON data from request";
+				QString formattedMessage = processServerReport(requestData);
+				if (!formattedMessage.isEmpty()) {
+					emit newLogDataReceived(formattedMessage);  // 触发信号，将消息发送给日志窗口
 				}
 
 				QByteArray response = "HTTP/1.1 200 OK\r\n"
 					"Content-Type: text/plain\r\n"
 					"Content-Length: 17\r\n"
 					"\r\n"
-					"Heartbeat received";
+					"Request received";
 				client->write(response);
 				client->disconnectFromHost();
 				});
@@ -136,7 +158,7 @@ void Celestian::getLoginInfo()
 	QUrl apiUrl("http://localhost:3000/get_login_info");
 	QNetworkRequest request(apiUrl);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-	request.setRawHeader("Connection", "close");  // 强制关闭连接
+	request.setRawHeader("Connection", "close");
 
 	// 使用局部 QNetworkAccessManager
 	QNetworkAccessManager* localManager = new QNetworkAccessManager(this);
@@ -183,7 +205,7 @@ void Celestian::getLoginInfo()
 		qint64 receivedUserId = data.value("user_id").toVariant().toLongLong();
 		qDebug() << "Login info received, user_id:" << receivedUserId;
 
-		Celestian::userId = static_cast<int>(receivedUserId);
+		Celestian::userId = static_cast<qint64>(receivedUserId);
 
 		emit loginInfoReceived();  // 发送信号，通知登录信息已接收
 
@@ -198,7 +220,7 @@ void Celestian::getLoginInfo()
 		});
 }
 
-void Celestian::setUserId(int id)
+void Celestian::setUserId(qint64 id)
 {
 	userId = id;
 }
@@ -244,10 +266,17 @@ void Celestian::handleApiResponse(QNetworkReply* reply)
 
 void Celestian::populateTable(const QJsonArray& data)
 {
+	groupData = data;  // 存储完整的 group 列表
 	ui->tableWidget->clearContents();
 	ui->tableWidget->setRowCount(data.size());
 	ui->tableWidget->setColumnCount(1);
 	ui->tableWidget->setHorizontalHeaderLabels({ "Group Name" });
+
+	ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui->tableWidget->horizontalHeader()->setSectionsMovable(false);
+	ui->tableWidget->setDragDropMode(QAbstractItemView::NoDragDrop);
+	ui->tableWidget->setDragEnabled(false);
+	ui->tableWidget->setDropIndicatorShown(false);
 
 	for (int i = 0; i < data.size(); ++i) {
 		QJsonObject item = data[i].toObject();
@@ -264,4 +293,29 @@ void Celestian::updateStatusIndicator(bool isOnline)
 	else {
 		ui->statusIndicator->setStyleSheet("background-color: red; border-radius: 10px;");
 	}
+}
+
+void Celestian::onTableItemDoubleClicked(QTableWidgetItem* item)
+{
+	int row = item->row();  // 获取双击的行号
+
+	// 从 groupData 中提取 group_id
+	QJsonObject itemData = groupData[row].toObject();
+	int temp = itemData.value("group_id").toInt();
+	setCurrentGroupId(temp);
+
+	qDebug() << "Group ID selected:" << currentGroupId;
+	qDebug() << "Group ID selected in onTableItemDoubleClicked:" << currentGroupId;
+}
+
+void Celestian::onPracticeButtonClicked()
+{
+	if (currentGroupId == -1) {
+		QMessageBox::warning(this, "Error", "请先选择一个有效的群组！");
+		return;
+	}
+
+	Practice* practiceWindow = new Practice(this);
+	practiceWindow->setAttribute(Qt::WA_DeleteOnClose);  // 窗口关闭时自动删除
+	practiceWindow->show();
 }

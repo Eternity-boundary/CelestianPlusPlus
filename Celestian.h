@@ -1,8 +1,10 @@
-// Created by Eternity_boundary on Jan 4,2025
 #pragma once
 #include <QMainWindow>
 #include <QNetworkAccessManager>
 #include <QJsonArray>
+#include <QTcpServer>
+#include <QNetworkReply>
+#include <QTableWidgetItem>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class CelestianClass; }
@@ -16,23 +18,34 @@ public:
 	explicit Celestian(QWidget* parent = nullptr);
 	~Celestian();
 
-	static int getUserId(); // 提供一个只读接口
+	static qint64 getUserId();
+	static int getCurrentGroupId();
+	static void setCurrentGroupId(int id);
 
 signals:
 	void loginInfoReceived();
+	void newLogDataReceived(const QString& message);  // 发送日志数据的信号
 
 private slots:
 	void on_pushButton_clicked();
 	void handleApiResponse(QNetworkReply* reply);
+	void onTableItemDoubleClicked(QTableWidgetItem* item);
+	void onPracticeButtonClicked();
 
 private:
 	void startHttpServer();
 	void getLoginInfo();
+	void setUserId(qint64 id);
 	void populateTable(const QJsonArray& data);
 	void updateStatusIndicator(bool isOnline);
 
+	QString processServerReport(const QByteArray& requestData);  // 封装的解析函数
+
 	Ui::CelestianClass* ui;
 	QNetworkAccessManager* networkManager;
-	static int userId;
-	static void setUserId(int id);
+
+	static qint64 userId;
+	static int currentGroupId;
+
+	QJsonArray groupData;
 };

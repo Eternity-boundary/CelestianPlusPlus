@@ -37,7 +37,7 @@
      <string>刷新列表</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="practice">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -50,7 +50,7 @@
      <string>启动修仙</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="pack">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -63,7 +63,7 @@
      <string>背包操作</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="act">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -76,7 +76,7 @@
      <string>采药</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_5">
+   <widget class="QPushButton" name="communityTask">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -89,7 +89,7 @@
      <string>获取宗门任务</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_6">
+   <widget class="QPushButton" name="dailyTask">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -102,7 +102,7 @@
      <string>每日悬赏令</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_7">
+   <widget class="QPushButton" name="market">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -115,7 +115,7 @@
      <string>坊市操作</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_8">
+   <widget class="QPushButton" name="buyPotuon">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -128,7 +128,7 @@
      <string>快速购买当前突破丹药</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_9">
+   <widget class="QPushButton" name="bank">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -141,7 +141,7 @@
      <string>灵庄操作</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_SignIn">
+   <widget class="QPushButton" name="signIn">
     <property name="geometry">
      <rect>
       <x>400</x>
@@ -187,10 +187,10 @@ border-radius: 10px;
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>440</y>
       <width>121</width>
-      <height>21</height>
+      <height>26</height>
      </rect>
     </property>
     <property name="font">
