@@ -2,6 +2,7 @@
 #include <QDialog>
 #include <QTextEdit>
 #include <QNetworkAccessManager>
+#define PRACTICE_TIMER_INTERVAL 65000
 
 class Practice : public QDialog
 {

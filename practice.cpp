@@ -1,6 +1,6 @@
 #include "practice.h"
 #include "Celestian.h"
-#include "LogProcessor.h"  // 引入工具类
+#include "LogProcessor.h"
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QPushButton>
@@ -35,11 +35,9 @@ Practice::Practice(QWidget* parent)
 	timer = new QTimer(this);
 	connect(timer, &QTimer::timeout, this, &Practice::sendGroupMessage);
 
-	// 立即发送一次消息
 	sendGroupMessage();
 
-	// 启动定时器，每 65 秒触发一次
-	timer->start(65000);
+	timer->start(PRACTICE_TIMER_INTERVAL);
 
 	// 连接关闭按钮，停止定时器并关闭窗口
 	connect(closeButton, &QPushButton::clicked, this, [this]() {
@@ -81,12 +79,12 @@ void Practice::sendGroupMessage()
 
 	QJsonObject atMessage;
 	atMessage["type"] = "at";
-	atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };  // 硬编码 QQ 号
+	atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };
 	messageArray.append(atMessage);
 
 	QJsonObject textMessage;
 	textMessage["type"] = "text";
-	textMessage["data"] = QJsonObject{ {"text", "修仙"} };  // 硬编码文本
+	textMessage["data"] = QJsonObject{ {"text", "修仙"} };
 	messageArray.append(textMessage);
 
 	jsonData["message"] = messageArray;
