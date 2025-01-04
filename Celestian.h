@@ -25,12 +25,14 @@ public:
 signals:
 	void loginInfoReceived();
 	void newLogDataReceived(const QString& message);  // 发送日志数据的信号
+	void dataReceived(const QString& data);
 
 private slots:
 	void on_pushButton_clicked();
 	void handleApiResponse(QNetworkReply* reply);
 	void onTableItemDoubleClicked(QTableWidgetItem* item);
 	void onPracticeButtonClicked();
+	void onPackButtonClicked();
 
 private:
 	void startHttpServer();

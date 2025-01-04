@@ -102,6 +102,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="backPackMan.cpp" />
     <ClCompile Include="practice.cpp" />
     <QtRcc Include="Celestian.qrc" />
     <QtUic Include="Celestian.ui" />
@@ -109,13 +110,14 @@
     <ClCompile Include="Celestian.cpp" />
     <ClCompile Include="main.cpp" />
     <None Include="Celestian++.ico" />
-    <QtUic Include="Widget.ui" />
+    <QtUic Include="backpack.ui" />
     <ResourceCompile Include="Celestian++.rc" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="practice.h" />
+    <QtMoc Include="Practice.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="backPackMan.h" />
     <ClInclude Include="LogProcessor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,7 @@
 // Created by Eternity_boundary on Jan 4,2025
 #include "Celestian.h"
 #include "Practice.h"
+#include "backPackMan.h"
 #include "ui_Celestian.h"
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -27,6 +28,7 @@ Celestian::Celestian(QWidget* parent)
 	connect(networkManager, &QNetworkAccessManager::finished, this, &Celestian::handleApiResponse);
 	connect(ui->tableWidget, &QTableWidget::itemDoubleClicked, this, &Celestian::onTableItemDoubleClicked);
 	connect(ui->practice, &QPushButton::clicked, this, &Celestian::onPracticeButtonClicked);
+	connect(ui->pack, &QPushButton::clicked, this, &Celestian::onPackButtonClicked);
 
 	startHttpServer();
 	getLoginInfo(); // 程序启动时请求 login info
@@ -121,7 +123,8 @@ void Celestian::startHttpServer()
 
 				QString formattedMessage = processServerReport(requestData);
 				if (!formattedMessage.isEmpty()) {
-					emit newLogDataReceived(formattedMessage);  // 触发信号，将消息发送给日志窗口
+					emit newLogDataReceived(formattedMessage); // 触发信号，将消息发送给日志窗口
+					emit dataReceived(formattedMessage); // 触发信号，将消息发送给背包窗口
 				}
 
 				QByteArray response = "HTTP/1.1 200 OK\r\n"
@@ -318,4 +321,26 @@ void Celestian::onPracticeButtonClicked()
 	Practice* practiceWindow = new Practice(this);
 	practiceWindow->setAttribute(Qt::WA_DeleteOnClose);  // 窗口关闭时自动删除
 	practiceWindow->show();
+}
+
+void Celestian::onPackButtonClicked()
+{
+	if (currentGroupId == -1) {
+		QMessageBox::warning(this, "提示", "请先双击选择一个群组！");
+		return;
+	}
+
+	backpackMan* backpackWindow = new backpackMan(this);
+	backpackWindow->setGroupId(currentGroupId);  // 传递当前群组 ID
+
+	// 连接主界面的信号与子窗口的槽函数
+	connect(this, &Celestian::dataReceived, backpackWindow, &backpackMan::onDataReceived);
+
+	backpackWindow->setAttribute(Qt::WA_DeleteOnClose);
+	backpackWindow->exec();
+}
+
+void backpackMan::setGroupId(int groupId)  // 函数定义
+{
+	currentGroupId = groupId;
 }

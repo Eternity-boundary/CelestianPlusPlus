@@ -15,12 +15,18 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableWidget" name="tableWidget"/>
+    <widget class="QTableWidget" name="tableWidget">
+     <property name="columnCount">
+      <number>2</number>
+     </property>
+     <column/>
+     <column/>
+    </widget>
    </item>
    <item>
     <widget class="QPushButton" name="refreshPage">
      <property name="text">
-      <string>获取列表</string>
+      <string>获取页面</string>
      </property>
     </widget>
    </item>

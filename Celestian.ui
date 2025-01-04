@@ -60,7 +60,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>背包操作</string>
+     <string>丹药背包操作</string>
     </property>
    </widget>
    <widget class="QPushButton" name="act">

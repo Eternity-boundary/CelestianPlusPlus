@@ -46,17 +46,23 @@
     <ClCompile Include="practice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="backPackMan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Celestian.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="practice.h">
+    <QtMoc Include="Practice.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="backPackMan.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="Widget.ui">
+    <QtUic Include="backpack.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>
