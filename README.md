@@ -1,7 +1,7 @@
 # Celestian++
 ![Language](https://img.shields.io/badge/language-C++-red)
 
-# Celestian的进阶版本
+# Celestian的进阶版本，适用于一念成仙
 
 本项目需要安装LLOneBOT才能使用！
 请前往https://github.com/LLOneBot/LLOneBot
