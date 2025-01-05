@@ -83,7 +83,7 @@
       <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
       <ExternalTemplatesDiagnostics>false</ExternalTemplatesDiagnostics>
       <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
-      <DisableSpecificWarnings>26813 26495</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26813;26495</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
