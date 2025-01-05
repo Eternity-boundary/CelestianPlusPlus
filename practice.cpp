@@ -1,6 +1,8 @@
 #include "practice.h"
 #include "Celestian.h"
 #include "LogProcessor.h"
+#include "backPackMan.h"
+#include "JsonRequestHandler.h"
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QPushButton>
@@ -11,6 +13,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QTimer>
+#include <qmessagebox.h>
 
 Practice::Practice(QWidget* parent)
 	: QDialog(parent), networkManager(new QNetworkAccessManager(this))
@@ -67,44 +70,5 @@ void Practice::sendGroupMessage()
 		return;
 	}
 
-	QUrl apiUrl("http://localhost:3000/send_group_msg");
-	QNetworkRequest request(apiUrl);
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
-	// 构建 JSON 数据
-	QJsonObject jsonData;
-	jsonData["group_id"] = Celestian::getCurrentGroupId();
-
-	QJsonArray messageArray;
-
-	QJsonObject atMessage;
-	atMessage["type"] = "at";
-	atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };
-	messageArray.append(atMessage);
-
-	QJsonObject textMessage;
-	textMessage["type"] = "text";
-	textMessage["data"] = QJsonObject{ {"text", "修仙"} };
-	messageArray.append(textMessage);
-
-	jsonData["message"] = messageArray;
-	jsonData["post_type"] = "message";  // 添加 post_type 字段
-
-	// 发送 POST 请求
-	QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonData).toJson());
-
-	// 处理响应
-	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-		QByteArray responseData = reply->readAll();
-		qDebug() << "Server response data:" << responseData;
-
-		if (reply->error() != QNetworkReply::NoError) {
-			logOutput->append("Failed to send message: " + reply->errorString());
-		}
-		else {
-			logOutput->append("Message sent successfully.");
-		}
-
-		reply->deleteLater();
-		});
+	JsonRequestHandler::sendJsonRequest("修炼");
 }

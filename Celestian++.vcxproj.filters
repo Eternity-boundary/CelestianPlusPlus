@@ -49,6 +49,9 @@
     <ClCompile Include="backPackMan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="sendJsonRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Celestian.h">
@@ -68,6 +71,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LogProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonRequestHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

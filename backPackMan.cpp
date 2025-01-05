@@ -1,5 +1,6 @@
 #include "backpackMan.h"
 #include "LogProcessor.h"
+#include "JsonRequestHandler.h"
 #include "Celestian.h"
 #include <QJsonObject>
 #include <QJsonArray>
@@ -8,19 +9,31 @@
 #include <QNetworkReply>
 #include <QMessageBox>
 #include <QDebug>
+#include <QTimer>
 
+qint64 selectedPrice;//价格
 backpackMan::backpackMan(QWidget* parent)
 	: QDialog(parent), networkManager(new QNetworkAccessManager(this)), currentGroupId(-1)
 {
 	ui.setupUi(this);
 	ui.tableWidget->setColumnCount(2);
-	// 可选：设置表头
+
+	// 设置表头
 	QStringList headers;
 	headers << "药材名称" << "数量";
 	ui.tableWidget->setHorizontalHeaderLabels(headers);
 
-	// 连接“获取页面”按钮与槽函数
+	// 禁用表格的编辑与拖动
+	ui.tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);  // 禁用编辑
+	ui.tableWidget->setDragDropMode(QAbstractItemView::NoDragDrop);      // 禁用拖放
+	ui.tableWidget->setDragEnabled(false);
+	ui.tableWidget->setDropIndicatorShown(false);
+
 	connect(ui.refreshPage, &QPushButton::clicked, this, &backpackMan::onRefreshPageClicked);
+	connect(ui.tableWidget, &QTableWidget::itemDoubleClicked, this, &backpackMan::onTableItemDoubleClicked);
+	connect(ui.previousPage, &QPushButton::clicked, this, &backpackMan::onPreviousPageClicked);
+	connect(ui.nextPage, &QPushButton::clicked, this, &backpackMan::onNextPageClicked);
+	connect(ui.sell, &QPushButton::clicked, this, &backpackMan::onSellButtonClicked);
 }
 
 void backpackMan::onDataReceived(const QString& data)
@@ -28,6 +41,17 @@ void backpackMan::onDataReceived(const QString& data)
 	// 1. 使用工具类清洗数据
 	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);
 	qDebug() << "清洗后的数据：" << cleanedData;
+
+	//额外处理：获取价格
+	QString selectedPriceStr;  // 选中的药材价格字符串
+	QRegularExpression priceRegex(R"(价格:(\d{1,4}(?:\.\d{1,2})?[万亿]))");
+	QRegularExpressionMatch priceMatch = priceRegex.match(cleanedData);
+	if (priceMatch.hasMatch()) {
+		selectedPriceStr = priceMatch.captured(1);           // 提取价格字符串
+		selectedPrice = convertPrice(selectedPriceStr);      // 转换价格为整数
+		qDebug() << "提取的价格：" << selectedPriceStr;
+		qDebug() << "转换后的价格：" << selectedPrice;
+	}
 
 	// 2. 进一步清理噪音（移除常见无关部分）
 	cleanedData.remove(QRegularExpression(R"(&enter=false&reply=false)"));  // 移除无关参数
@@ -39,14 +63,24 @@ void backpackMan::onDataReceived(const QString& data)
 	QRegularExpression regex(R"((?:一品药材|二品药材|三品药材|四品药材|五品药材|六品药材|七品药材)\s(\S+)\s数量:(\d+))");
 	QRegularExpressionMatchIterator i = regex.globalMatch(cleanedData);
 
-	// 4. 清空表格
-	ui.tableWidget->setRowCount(0);
-
-	// 5. 遍历匹配结果并填入表格
+	// 4. 遍历匹配结果并填入表格（避免重复插入）
 	while (i.hasNext()) {
 		QRegularExpressionMatch match = i.next();
 		QString herbName = match.captured(1);  // 提取药材名称
 		QString quantity = match.captured(2);  // 提取数量
+
+		// 检查表格中是否已存在相同的药材名称
+		bool isDuplicate = false;
+		for (int row = 0; row < ui.tableWidget->rowCount(); ++row) {
+			if (ui.tableWidget->item(row, 0)->text() == herbName) {
+				isDuplicate = true;
+				break;
+			}
+		}
+
+		if (isDuplicate) {
+			continue;  // 跳过已存在的药材
+		}
 
 		// 在表格中插入新行
 		int rowCount = ui.tableWidget->rowCount();
@@ -66,49 +100,85 @@ void backpackMan::onDataReceived(const QString& data)
 
 void backpackMan::onRefreshPageClicked()
 {
-	int currentGroupId = Celestian::getCurrentGroupId();
-	if (currentGroupId == -1) {
-		QMessageBox::warning(this, "错误", "群组 ID 无效，请重试！");
+	JsonRequestHandler::sendJsonRequest("药材背包");
+}
+
+int pageCount = 1;
+
+void backpackMan::onPreviousPageClicked()
+{
+	if (pageCount == 1) {
+		QMessageBox::warning(this, "提示", "已经是第一页了！");
+		return;
+	}
+	JsonRequestHandler::sendJsonRequest("上一页");
+	pageCount--;
+}
+
+void backpackMan::onNextPageClicked()
+{
+	JsonRequestHandler::sendJsonRequest("下一页");
+	pageCount++;
+}
+
+void backpackMan::onSellButtonClicked()
+{
+	if (selectedHerbName.isEmpty()) {
+		QMessageBox::warning(this, "提示", "请先选择一个药材！");
 		return;
 	}
 
-	QUrl apiUrl("http://localhost:3000/send_group_msg");
-	QNetworkRequest request(apiUrl);
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+	if (selectedPrice == -1) {
+		QMessageBox::warning(this, "提示", "价格无效，请检查数据！");
+		return;
+	}
 
-	// 构建 JSON 数据
-	QJsonObject jsonData;
-	jsonData["group_id"] = currentGroupId;
+	JsonRequestHandler::sendJsonRequest("坊市刷新" + selectedHerbName);
 
-	QJsonArray messageArray;
-
-	QJsonObject atMessage;
-	atMessage["type"] = "at";
-	atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };  // 固定 QQ 号
-	messageArray.append(atMessage);
-
-	QJsonObject textMessage;
-	textMessage["type"] = "text";
-	textMessage["data"] = QJsonObject{ {"text", "药材背包"} };  // 固定文本
-	messageArray.append(textMessage);
-
-	jsonData["message"] = messageArray;
-
-	// 发送 POST 请求
-	QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonData).toJson());
-
-	// 处理响应
-	connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-		QByteArray responseData = reply->readAll();
-		qDebug() << "Server response:" << responseData;
-
-		if (reply->error() != QNetworkReply::NoError) {
-			QMessageBox::warning(this, "错误", "发送请求失败：" + reply->errorString());
+	QTimer::singleShot(2000, this, [this]() {
+		QMessageBox msgBox;
+		msgBox.setWindowTitle("提示");
+		msgBox.setText("选择的药材为 " + selectedHerbName + "，价格为 " + QString::number(selectedPrice) + "，是否确认上架？");
+		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+		msgBox.setDefaultButton(QMessageBox::Cancel);
+		int ret = msgBox.exec();
+		if (ret == QMessageBox::Yes) {
+			JsonRequestHandler::sendJsonRequest("坊市上架 " + selectedHerbName + " " + QString::number(selectedPrice));
 		}
-		else {
-			QMessageBox::information(this, "成功", "请求已发送！");
-		}
-
-		reply->deleteLater();
 		});
+}
+
+void backpackMan::onTableItemDoubleClicked(QTableWidgetItem* item)
+{
+	if (item == nullptr) return;  // 检查 item 是否为空
+
+	int row = item->row();  // 获取双击的行号
+	QTableWidgetItem* herbItem = ui.tableWidget->item(row, 0);  // 获取第一列的药材名称
+
+	if (herbItem) {
+		selectedHerbName = herbItem->text();  // 存储药材名称
+		qDebug() << "Selected herb name:" << selectedHerbName;
+	}
+}
+
+qint64 convertPrice(const QString& priceStr)
+{
+	QRegularExpression regex(R"((\d+(?:\.\d+)?)([万亿]))");
+	QRegularExpressionMatch match = regex.match(priceStr);
+
+	if (!match.hasMatch()) {
+		return -1;  // 返回 -1 表示匹配失败
+	}
+
+	double number = match.captured(1).toDouble();  // 提取数字部分并转换为浮点数
+	QString unit = match.captured(2);              // 提取单位部分
+
+	if (unit == "万") {
+		return static_cast<qint64>(number * 1e4);  // 转换为整数，乘以 10^4
+	}
+	else if (unit == "亿") {
+		return static_cast<qint64>(number * 1e8);  // 转换为整数，乘以 10^8
+	}
+
+	return -1;
 }
