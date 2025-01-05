@@ -1,8 +1,8 @@
-#include "practice.h"
-#include "Celestian.h"
-#include "LogProcessor.h"
-#include "backPackMan.h"
-#include "JsonRequestHandler.h"
+#include "Headers\practice.h"
+#include "Headers\Celestian.h"
+#include "Headers\LogProcessor.h"
+#include "Headers\backPackMan.h"
+#include "Headers\JsonRequestHandler.h"
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QPushButton>

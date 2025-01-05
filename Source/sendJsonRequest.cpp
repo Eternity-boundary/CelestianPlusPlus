@@ -1,5 +1,5 @@
-#include "JsonRequestHandler.h"
-#include "Celestian.h"
+#include "Headers\JsonRequestHandler.h"
+#include "Headers\Celestian.h"
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>

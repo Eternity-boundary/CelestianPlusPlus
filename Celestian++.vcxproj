@@ -102,25 +102,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="backPackMan.cpp" />
-    <ClCompile Include="practice.cpp" />
-    <ClCompile Include="sendJsonRequest.cpp" />
-    <QtRcc Include="Celestian.qrc" />
-    <QtUic Include="Celestian.ui" />
-    <QtMoc Include="Celestian.h" />
-    <ClCompile Include="Celestian.cpp" />
-    <ClCompile Include="main.cpp" />
-    <None Include="Celestian++.ico" />
-    <QtUic Include="backpack.ui" />
+    <ClCompile Include="Source\backPackMan.cpp" />
+<ClCompile Include="Source\practice.cpp" />
+<ClCompile Include="Source\sendJsonRequest.cpp" />
+<QtRcc Include="Celestian.qrc" />
+<QtUic Include="Celestian.ui" />
+<QtMoc Include="Headers\Celestian.h" />
+<ClCompile Include="Source\Celestian.cpp" />
+<ClCompile Include="Source\main.cpp" />
+<None Include="Celestian++.ico" />
+<QtUic Include="backpack.ui" />
+
     <ResourceCompile Include="Celestian++.rc" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Practice.h" />
+    <QtMoc Include="Headers\Practice.h" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="backPackMan.h" />
-    <ClInclude Include="JsonRequestHandler.h" />
-    <ClInclude Include="LogProcessor.h" />
+    <QtMoc Include="Headers\backPackMan.h" />
+    <ClInclude Include="Headers\JsonRequestHandler.h" />
+    <ClInclude Include="Headers\LogProcessor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

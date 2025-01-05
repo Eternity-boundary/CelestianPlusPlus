@@ -1,7 +1,7 @@
 // Created by Eternity_boundary on Jan 4,2025
-#include "Celestian.h"
-#include "Practice.h"
-#include "backPackMan.h"
+#include "Headers\Celestian.h"
+#include "Headers\Practice.h"
+#include "Headers\backPackMan.h"
 #include "ui_Celestian.h"
 #include <QJsonDocument>
 #include <QJsonObject>

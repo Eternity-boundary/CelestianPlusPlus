@@ -1,7 +1,7 @@
-#include "backpackMan.h"
-#include "LogProcessor.h"
-#include "JsonRequestHandler.h"
-#include "Celestian.h"
+#include "Headers\backpackMan.h"
+#include "Headers\LogProcessor.h"
+#include "Headers\JsonRequestHandler.h"
+#include "Headers\Celestian.h"
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonDocument>
