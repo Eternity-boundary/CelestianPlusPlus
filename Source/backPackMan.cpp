@@ -61,7 +61,7 @@ void backpackMan::onDataReceived(const QString& data)
 	qDebug() << "进一步清理后的数据：" << cleanedData;
 
 	// 3. 正则表达式提取药材名称和数量
-	QRegularExpression regex(R"((?:一品药材|二品药材|三品药材|四品药材|五品药材|六品药材|七品药材)\s(\S+)\s数量:(\d+))");
+	QRegularExpression regex(R"((?:一品药材|二品药材|三品药材|四品药材|五品药材|六品药材|七品药材|八品药材|九品药材)\s(\S+)\s数量:(\d+))");
 	QRegularExpressionMatchIterator i = regex.globalMatch(cleanedData);
 
 	// 4. 遍历匹配结果并填入表格（避免重复插入）
@@ -104,7 +104,7 @@ void backpackMan::onRefreshPageClicked()
 	JsonRequestHandler::sendJsonRequest("药材背包");
 }
 
-int pageCount = 1;
+qint16 pageCount = 1;
 
 void backpackMan::onPreviousPageClicked()
 {
@@ -112,14 +112,20 @@ void backpackMan::onPreviousPageClicked()
 		QMessageBox::warning(this, "提示", "已经是第一页了！");
 		return;
 	}
-	JsonRequestHandler::sendJsonRequest("上一页");
 	pageCount--;
+	QTableWidget* table = ui.tableWidget;
+	table->clearContents();
+	table->setRowCount(0);
+	JsonRequestHandler::sendJsonRequest("药材背包 " + QString::number(pageCount));
 }
 
 void backpackMan::onNextPageClicked()
 {
-	JsonRequestHandler::sendJsonRequest("下一页");
+	QTableWidget* table = ui.tableWidget;
+	table->clearContents();
+	table->setRowCount(0);
 	pageCount++;
+	JsonRequestHandler::sendJsonRequest("药材背包 " + QString::number(pageCount));
 }
 
 void backpackMan::onSellButtonClicked()

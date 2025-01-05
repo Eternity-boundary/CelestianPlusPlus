@@ -74,5 +74,3 @@ private:
 		return result;
 	}
 };
-
-
