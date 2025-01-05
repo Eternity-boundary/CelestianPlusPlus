@@ -1,14 +1,15 @@
+// Created by Eternity_boundary on Jan 5,2025
 #include "Headers\backpackMan.h"
-#include "Headers\LogProcessor.h"
-#include "Headers\JsonRequestHandler.h"
 #include "Headers\Celestian.h"
-#include <QJsonObject>
+#include "Headers\JsonRequestHandler.h"
+#include "Headers\LogProcessor.h"
+#include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+#include <QJsonObject>
 #include <QMessageBox>
-#include <QDebug>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QTimer>
 
 qint64 selectedPrice;//价格

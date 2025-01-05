@@ -1,17 +1,17 @@
 // Created by Eternity_boundary on Jan 4,2025
+#include "Headers\backPackMan.h"
 #include "Headers\Celestian.h"
 #include "Headers\Practice.h"
-#include "Headers\backPackMan.h"
 #include "ui_Celestian.h"
+#include <QDebug>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QMessageBox>
-#include <QTcpServer>
-#include <QTcpSocket>
-#include <QDebug>
 #include <QNetworkReply>
 #include <QRegularExpression>
+#include <QTcpServer>
+#include <QTcpSocket>
 #include <QTimer>
 
 qint64 Celestian::userId = -1; // 初始化 userId

@@ -1,13 +1,14 @@
-#include "Headers\JsonRequestHandler.h"
+// Created by Eternity_boundary on Jan 5,2025
 #include "Headers\Celestian.h"
-#include <QJsonObject>
+#include "Headers\JsonRequestHandler.h"
+#include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+#include <QJsonObject>
 #include <QMessageBox>
-#include <QDebug>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 
 void JsonRequestHandler::sendJsonRequest(const QString& textContent)
 {

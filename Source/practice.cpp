@@ -1,19 +1,20 @@
-#include "Headers\practice.h"
-#include "Headers\Celestian.h"
-#include "Headers\LogProcessor.h"
+// Created by Eternity_boundary on Jan 4,2025
 #include "Headers\backPackMan.h"
+#include "Headers\Celestian.h"
 #include "Headers\JsonRequestHandler.h"
-#include <QVBoxLayout>
-#include <QTextEdit>
-#include <QPushButton>
+#include "Headers\LogProcessor.h"
+#include "Headers\practice.h"
+#include <QDebug>
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
-#include <QDebug>
+#include <qmessagebox.h>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QPushButton>
+#include <QTextEdit>
 #include <QTimer>
-#include <qmessagebox.h>
+#include <QVBoxLayout>
 
 Practice::Practice(QWidget* parent)
 	: QDialog(parent), networkManager(new QNetworkAccessManager(this))

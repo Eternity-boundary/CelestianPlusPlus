@@ -1,6 +1,5 @@
-#ifndef LOGPROCESSOR_H
-#define LOGPROCESSOR_H
-
+// Created by Eternity_boundary on Jan 4,2025
+#pragma once
 #include <QString>
 #include <QRegularExpression>
 #include <QUrl>
@@ -76,4 +75,4 @@ private:
 	}
 };
 
-#endif // LOGPROCESSOR_H
+
