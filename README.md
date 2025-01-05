@@ -17,7 +17,7 @@
 
 4.启用HTTP心跳
 
-5.启用HTTP上报并将上报地址设置为http://http://localhost:7777/
+5.启用HTTP上报并将上报地址设置为http://localhost:7777/
 
 6.开始运行Celestian++
 
