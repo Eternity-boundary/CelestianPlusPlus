@@ -19,7 +19,9 @@
 
 5.启用HTTP上报并将上报地址设置为http://localhost:7777/
 
-6.开始运行Celestian++
+6.重启QQ
+
+7.开始运行Celestian++
 
 
 # 注意
