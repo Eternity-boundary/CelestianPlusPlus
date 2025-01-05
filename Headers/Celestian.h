@@ -6,6 +6,7 @@
 #include <QTcpServer>
 #include <QNetworkReply>
 #include <QTableWidgetItem>
+#define _CELESTIAN_DISABLED_WARNING 26813 26495
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class CelestianClass; }
@@ -34,6 +35,8 @@ private slots:
 	void onTableItemDoubleClicked(QTableWidgetItem* item);
 	void onPracticeButtonClicked();
 	void onPackButtonClicked();
+	void onactButtonClicked();
+	void onHarvestDataReceived(const QString& data);
 
 private:
 	void startHttpServer();
@@ -41,6 +44,8 @@ private:
 	void setUserId(qint64 id);
 	void populateTable(const QJsonArray& data);
 	void updateStatusIndicator(bool isOnline);
+	int harvestTime = -1;  // 存储提取到的时间（以分钟为单位）
+	bool hasUpdatedTime = false;
 
 	QString processServerReport(const QByteArray& requestData);  // 封装的解析函数
 

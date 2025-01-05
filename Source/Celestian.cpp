@@ -1,8 +1,13 @@
 // Created by Eternity_boundary on Jan 4,2025
+
 #include "Headers\backPackMan.h"
 #include "Headers\Celestian.h"
 #include "Headers\Practice.h"
+#include "Headers/JsonRequestHandler.h"
+#include "Headers/LogProcessor.h"
 #include "ui_Celestian.h"
+#pragma warning(push)
+#pragma warning(disable: _CELESTIAN_DISABLED_WARNING)
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -13,10 +18,10 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QTimer>
+#pragma warning(pop)
 
 qint64 Celestian::userId = -1; // 初始化 userId
 int Celestian::currentGroupId = -1;// 初始化 currentGroupId
-
 Celestian::Celestian(QWidget* parent)
 	: QMainWindow(parent)
 	, ui(new Ui::CelestianClass)
@@ -29,6 +34,8 @@ Celestian::Celestian(QWidget* parent)
 	connect(ui->tableWidget, &QTableWidget::itemDoubleClicked, this, &Celestian::onTableItemDoubleClicked);
 	connect(ui->practice, &QPushButton::clicked, this, &Celestian::onPracticeButtonClicked);
 	connect(ui->pack, &QPushButton::clicked, this, &Celestian::onPackButtonClicked);
+	connect(ui->act, &QPushButton::clicked, this, &Celestian::onactButtonClicked);
+	connect(this, &Celestian::dataReceived, this, &Celestian::onHarvestDataReceived);
 
 	startHttpServer();
 	getLoginInfo(); // 程序启动时请求 login info
@@ -323,6 +330,47 @@ void Celestian::onPracticeButtonClicked()
 	practiceWindow->show();
 }
 
+void Celestian::onactButtonClicked()
+{
+	if (currentGroupId == -1) {
+		QMessageBox::warning(this, "提示", "请先双击选择一个群组！");
+		return;
+	}
+
+	// 重置标志，允许更新变量
+	hasUpdatedTime = false;
+
+	// 发送“采药”请求
+	JsonRequestHandler::sendJsonRequest("采药");
+	QMessageBox::information(this, "提示", "已发送采药请求，请等待时间结束...");
+}
+
+void Celestian::onHarvestDataReceived(const QString& data)
+{
+	// 检查是否已更新过时间，若已更新则直接返回
+	if (hasUpdatedTime) return;
+
+	// 1. 使用工具类清洗数据
+	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);
+	qDebug() << "清洗后的数据：" << cleanedData;
+
+	// 2. 使用正则表达式匹配时间信息
+	QRegularExpression regex(R"(开始采药(\d+)分钟后采药归来)");
+	QRegularExpressionMatch match = regex.match(cleanedData);
+	if (match.hasMatch()) {
+		harvestTime = match.captured(1).toInt() * 60000;  // 将时间转换为毫秒
+		hasUpdatedTime = true;  // 标记已更新
+		qDebug() << "提取的时间信息（毫秒）：" << harvestTime;
+
+		// 设置定时器，在 harvestTime 毫秒后发送“采药归来”请求
+		QTimer::singleShot(harvestTime, this, []() {
+			JsonRequestHandler::sendJsonRequest("采药归来");
+			});
+
+		QMessageBox::information(this, "提示", QString("采药已完成，%1分钟后将发送‘采药归来’请求").arg(harvestTime / 60000));
+	}
+}
+
 void Celestian::onPackButtonClicked()
 {
 	if (currentGroupId == -1) {
@@ -339,8 +387,7 @@ void Celestian::onPackButtonClicked()
 	backpackWindow->setAttribute(Qt::WA_DeleteOnClose);
 	backpackWindow->exec();
 }
-
-void backpackMan::setGroupId(int groupId)  // 函数定义
+void backpackMan::setGroupId(int groupId)
 {
 	currentGroupId = groupId;
 }

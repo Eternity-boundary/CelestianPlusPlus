@@ -3,6 +3,8 @@
 #include "Headers\Celestian.h"
 #include "Headers\JsonRequestHandler.h"
 #include "Headers\LogProcessor.h"
+#pragma warning(push)
+#pragma warning(disable: _CELESTIAN_DISABLED_WARNING)
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -11,6 +13,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QTimer>
+#pragma warning(pop)
 
 qint64 selectedPrice;//价格
 backpackMan::backpackMan(QWidget* parent)

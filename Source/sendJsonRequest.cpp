@@ -1,6 +1,8 @@
 // Created by Eternity_boundary on Jan 5,2025
 #include "Headers\Celestian.h"
 #include "Headers\JsonRequestHandler.h"
+#pragma warning(push)
+#pragma warning(disable: _CELESTIAN_DISABLED_WARNING)
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -9,6 +11,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#pragma warning(pop)
 
 void JsonRequestHandler::sendJsonRequest(const QString& textContent)
 {

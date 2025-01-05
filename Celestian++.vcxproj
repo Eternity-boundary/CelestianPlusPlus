@@ -71,12 +71,25 @@
     </Link>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/external:I"%QTDIR%\include" /external:W0
+ %(AdditionalOptions)</AdditionalOptions>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalOptions>/external:I"%QTDIR%\include\*" /external:W0 %(AdditionalOptions)</AdditionalOptions>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <ExternalTemplatesDiagnostics>false</ExternalTemplatesDiagnostics>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <DisableSpecificWarnings>26813 26495</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="Configuration">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -88,7 +101,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="Configuration">
     <ClCompile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -103,16 +116,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\backPackMan.cpp" />
-<ClCompile Include="Source\practice.cpp" />
-<ClCompile Include="Source\sendJsonRequest.cpp" />
-<QtRcc Include="Celestian.qrc" />
-<QtUic Include="Celestian.ui" />
-<QtMoc Include="Headers\Celestian.h" />
-<ClCompile Include="Source\Celestian.cpp" />
-<ClCompile Include="Source\main.cpp" />
-<None Include="Celestian++.ico" />
-<QtUic Include="backpack.ui" />
-
+    <ClCompile Include="Source\practice.cpp" />
+    <ClCompile Include="Source\sendJsonRequest.cpp" />
+    <QtRcc Include="Celestian.qrc" />
+    <QtUic Include="Celestian.ui" />
+    <QtMoc Include="Headers\Celestian.h" />
+    <ClCompile Include="Source\Celestian.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <None Include="Celestian++.ico" />
+    <QtUic Include="backpack.ui" />
     <ResourceCompile Include="Celestian++.rc" />
   </ItemGroup>
   <ItemGroup>

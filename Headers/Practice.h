@@ -22,9 +22,5 @@ private:
 	QTextEdit* logOutput;
 	QNetworkAccessManager* networkManager;
 
-	QString decodeHexEscapes(const QString& input);
-
-	QString formatRawMessage(const QString& rawMessage);  // 格式化 raw_message，移除 CQ 码
-
 	QTimer* timer;  // 定时器，用于循环发送消息
 };

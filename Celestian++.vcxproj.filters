@@ -29,9 +29,6 @@
     <QtUic Include="Celestian.ui">
       <Filter>Form Files</Filter>
     </QtUic>
-    <ClCompile Include="Celestian.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <None Include="Celestian++.ico">
       <Filter>Resource Files</Filter>
     </None>
@@ -40,27 +37,30 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Source\backPackMan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="practice.cpp">
+    <ClCompile Include="Source\practice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="backPackMan.cpp">
+    <ClCompile Include="Source\sendJsonRequest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sendJsonRequest.cpp">
+    <ClCompile Include="Source\Celestian.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="Celestian.h">
+    <QtMoc Include="Headers\Celestian.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="Practice.h">
+    <QtMoc Include="Headers\Practice.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <QtMoc Include="backPackMan.h">
+    <QtMoc Include="Headers\backPackMan.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -70,10 +70,10 @@
     </QtUic>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LogProcessor.h">
+    <ClInclude Include="Headers\JsonRequestHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JsonRequestHandler.h">
+    <ClInclude Include="Headers\LogProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

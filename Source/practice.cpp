@@ -4,6 +4,8 @@
 #include "Headers\JsonRequestHandler.h"
 #include "Headers\LogProcessor.h"
 #include "Headers\practice.h"
+#pragma warning(push)
+#pragma warning(disable: _CELESTIAN_DISABLED_WARNING)
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -15,6 +17,7 @@
 #include <QTextEdit>
 #include <QTimer>
 #include <QVBoxLayout>
+#pragma warning(pop)
 
 Practice::Practice(QWidget* parent)
 	: QDialog(parent), networkManager(new QNetworkAccessManager(this))
