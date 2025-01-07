@@ -36,6 +36,12 @@ Celestian::Celestian(QWidget* parent)
 	connect(ui->pack, &QPushButton::clicked, this, &Celestian::onPackButtonClicked);
 	connect(ui->act, &QPushButton::clicked, this, &Celestian::onactButtonClicked);
 	connect(this, &Celestian::dataReceived, this, &Celestian::onHarvestDataReceived);
+	connect(heartBeatTimer, &QTimer::timeout, this, [this]() {
+		qDebug() << "heartBeat timed out";
+		online_status_flag = false;
+		updateStatusIndicator(online_status_flag);
+		QMessageBox::warning(nullptr, "警告", "未检测到有效上报，程序将在受限模式下运行，部分功能将被禁用");
+		});
 
 	startHttpServer();
 	getLoginInfo(); // 程序启动时请求 login info
@@ -43,6 +49,9 @@ Celestian::Celestian(QWidget* parent)
 		Q_ASSERT(Celestian::userId != -1);
 		qDebug() << "User ID is valid, proceeding...";
 		});
+	heartBeatTimer = new QTimer(this);
+	heartBeatTimer->setInterval(60000);
+	heartBeatTimer->setSingleShot(true);
 }
 
 Celestian::~Celestian()
@@ -107,7 +116,9 @@ QString Celestian::processServerReport(const QByteArray& requestData)
 		QString metaEventType = jsonObj.value("meta_event_type").toString();
 		if (metaEventType == "heartbeat") {
 			qDebug() << "Heartbeat event received";
-			updateStatusIndicator(true);
+			bool online_status_flag = true;
+			updateStatusIndicator(online_status_flag);
+			heartBeatTimer->start();
 		}
 	}
 	else {
@@ -295,13 +306,15 @@ void Celestian::populateTable(const QJsonArray& data)
 	}
 }
 
-void Celestian::updateStatusIndicator(bool isOnline)
+bool Celestian::updateStatusIndicator(bool isOnline)
 {
 	if (isOnline) {
 		ui->statusIndicator->setStyleSheet("background-color: green; border-radius: 10px;");
+		return true;
 	}
 	else {
 		ui->statusIndicator->setStyleSheet("background-color: red; border-radius: 10px;");
+		return false;
 	}
 }
 
@@ -353,13 +366,13 @@ void Celestian::onHarvestDataReceived(const QString& data)
 	// 1. 使用工具类清洗数据
 	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);
 	qDebug() << "清洗后的数据：" << cleanedData;
+	hasUpdatedTime = true;  // 标记已更新
 
 	// 2. 使用正则表达式匹配时间信息
 	QRegularExpression regex(R"(开始采药(\d+)分钟后采药归来)");
 	QRegularExpressionMatch match = regex.match(cleanedData);
 	if (match.hasMatch()) {
 		harvestTime = match.captured(1).toInt() * 60000;  // 将时间转换为毫秒
-		hasUpdatedTime = true;  // 标记已更新
 		qDebug() << "提取的时间信息（毫秒）：" << harvestTime;
 
 		// 设置定时器，在 harvestTime 毫秒后发送“采药归来”请求

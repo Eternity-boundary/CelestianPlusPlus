@@ -43,9 +43,11 @@ private:
 	void getLoginInfo();
 	void setUserId(qint64 id);
 	void populateTable(const QJsonArray& data);
-	void updateStatusIndicator(bool isOnline);
+	bool updateStatusIndicator(bool isOnline);
 	int harvestTime = -1;  // 存储提取到的时间（以分钟为单位）
 	bool hasUpdatedTime = false;
+	bool online_status_flag = false;
+	QTimer* heartBeatTimer;
 
 	QString processServerReport(const QByteArray& requestData);  // 封装的解析函数
 

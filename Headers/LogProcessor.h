@@ -8,7 +8,7 @@
 class LogProcessor
 {
 public:
-	// 处理日志消息的静态方法
+	// 处理日志消息的静态函数
 	static QString processLogMessage(const QString& rawMessage, qint64 currentUserId)
 	{
 		QString message = rawMessage;
@@ -51,7 +51,7 @@ public:
 	}
 
 private:
-	// 解码十六进制转义字符的静态方法
+	// 解码十六进制转义字符的静态函数
 	static QString decodeHexEscapes(const QString& input)
 	{
 		QString result = input;

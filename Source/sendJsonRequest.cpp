@@ -33,7 +33,7 @@ void JsonRequestHandler::sendJsonRequest(const QString& textContent)
 
 	QJsonObject atMessage;
 	atMessage["type"] = "at";
-	atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };  // 固定 QQ 号
+	atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };
 	messageArray.append(atMessage);
 
 	QJsonObject textMessage;
