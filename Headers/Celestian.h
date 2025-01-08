@@ -26,7 +26,7 @@ public:
 
 signals:
 	void loginInfoReceived();
-	void newLogDataReceived(const QString& message);  // 发送日志数据的信号
+	void newLogDataReceived(const QString& message);
 	void dataReceived(const QString& data);
 
 private slots:

@@ -43,7 +43,7 @@ backpackMan::backpackMan(QWidget* parent)
 void backpackMan::onDataReceived(const QString& data)
 {
 	// 1. 使用工具类清洗数据
-	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);
+	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);//This is a bug, but why does it work?
 	qDebug() << "清洗后的数据：" << cleanedData;
 
 	//额外处理：获取价格
@@ -144,7 +144,7 @@ void backpackMan::onSellButtonClicked()
 	}
 
 	JsonRequestHandler::sendJsonRequest("坊市刷新" + selectedHerbName);
-
+	// TODO: 添加检测到售出上限溢出提示
 	QTimer::singleShot(2000, this, [this]() {
 		QMessageBox msgBox;
 		msgBox.setWindowTitle("提示");

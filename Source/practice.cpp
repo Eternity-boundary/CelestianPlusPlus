@@ -55,10 +55,23 @@ Practice::Practice(QWidget* parent)
 
 void Practice::appendLogMessage(const QString& message)
 {
+	// 处理原始日志消息
 	QString formattedMessage = LogProcessor::processLogMessage(message, Celestian::getUserId());
+	qDebug() << formattedMessage;
 
-	if (!formattedMessage.isEmpty()) {
-		logOutput->append(formattedMessage);
+	// 正则表达式，匹配数字及其单位
+	QRegularExpression regex("\\d+(\\.\\d+)?([万千百十]?)");
+	QRegularExpressionMatchIterator iter = regex.globalMatch(formattedMessage);
+
+	bool hasMatch = false;
+	while (iter.hasNext()) {
+		QRegularExpressionMatch match = iter.next();
+		QString result = match.captured(0);
+		logOutput->append(result);  // 追加匹配结果到日志输出
+		hasMatch = true;
+	}
+
+	if (hasMatch) {
 		logOutput->repaint();  // 强制刷新界面
 		qDebug() << "Appended to log.";
 	}

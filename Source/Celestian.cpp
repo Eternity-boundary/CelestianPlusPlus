@@ -1,10 +1,9 @@
 // Created by Eternity_boundary on Jan 4,2025
-
 #include "Headers\backPackMan.h"
 #include "Headers\Celestian.h"
 #include "Headers\Practice.h"
-#include "Headers/JsonRequestHandler.h"
-#include "Headers/LogProcessor.h"
+#include "Headers\JsonRequestHandler.h"
+#include "Headers\LogProcessor.h"
 #include "ui_Celestian.h"
 #pragma warning(push)
 #pragma warning(disable: _CELESTIAN_DISABLED_WARNING)
@@ -357,9 +356,11 @@ void Celestian::onactButtonClicked()
 	JsonRequestHandler::sendJsonRequest("采药");
 	QMessageBox::information(this, "提示", "已发送采药请求，请等待时间结束...");
 }
+// TODO: 添加自动游历与完成
 
 void Celestian::onHarvestDataReceived(const QString& data)
 {
+	int harvestTimes = 0;
 	// 检查是否已更新过时间，若已更新则直接返回
 	if (hasUpdatedTime) return;
 
@@ -372,15 +373,23 @@ void Celestian::onHarvestDataReceived(const QString& data)
 	QRegularExpression regex(R"(开始采药(\d+)分钟后采药归来)");
 	QRegularExpressionMatch match = regex.match(cleanedData);
 	if (match.hasMatch()) {
-		harvestTime = match.captured(1).toInt() * 60000;  // 将时间转换为毫秒
-		qDebug() << "提取的时间信息（毫秒）：" << harvestTime;
+		if (harvestTimes <= 10)
+		{
+			harvestTime = match.captured(1).toInt() * 60000;  // 将时间转换为毫秒
+			qDebug() << "提取的时间信息（毫秒）：" << harvestTime;
 
-		// 设置定时器，在 harvestTime 毫秒后发送“采药归来”请求
-		QTimer::singleShot(harvestTime, this, []() {
-			JsonRequestHandler::sendJsonRequest("采药归来");
-			});
+			// 设置定时器，在 harvestTime 毫秒后发送“采药归来”请求
+			QTimer::singleShot(harvestTime, this, []() {
+				JsonRequestHandler::sendJsonRequest("采药归来");
+				});
 
-		QMessageBox::information(this, "提示", QString("采药已完成，%1分钟后将发送‘采药归来’请求").arg(harvestTime / 60000));
+			QMessageBox::information(this, "提示", QString("采药已完成，%1分钟后将发送‘采药归来’请求").arg(harvestTime / 60000));
+			harvestTimes++;
+		}
+		else
+		{
+			QMessageBox::warning(this, "提示", "采药次数已达到10次");
+		}
 	}
 }
 
