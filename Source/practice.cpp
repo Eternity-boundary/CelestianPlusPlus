@@ -87,5 +87,5 @@ void Practice::sendGroupMessage()
 		return;
 	}
 
-	JsonRequestHandler::sendJsonRequest("修炼");
+	JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "修炼");
 }

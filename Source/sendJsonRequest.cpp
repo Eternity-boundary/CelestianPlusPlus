@@ -1,4 +1,4 @@
-// Created by Eternity_boundary on Jan 5,2025
+// Created by Eternity_boundary on Jan 5, 2025
 #include "Headers\Celestian.h"
 #include "Headers\JsonRequestHandler.h"
 #pragma warning(push)
@@ -13,42 +13,52 @@
 #include <QNetworkRequest>
 #pragma warning(pop)
 
-void JsonRequestHandler::sendJsonRequest(const QString& textContent)
-{
-	int currentGroupId = Celestian::getCurrentGroupId();
-	if (currentGroupId == -1) {
-		QMessageBox::warning(nullptr, "错误", "群组 ID 无效，请重试！");
-		return;
+namespace {
+	QNetworkAccessManager* getNetworkManagerInstance() {
+		static QNetworkAccessManager networkManager;
+		return &networkManager;
 	}
+}
 
-	QUrl apiUrl("http://localhost:3000/send_group_msg");
-	QNetworkRequest request(apiUrl);
-	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+void JsonRequestHandler::sendJsonRequest(const bool sendToWhere, const QString& textContent)
+{
+	QUrl apiUrl = (sendToWhere == SENDTOPRIVATE)
+		? QUrl("http://localhost:3000/send_private_msg")
+		: QUrl("http://localhost:3000/send_group_msg");
 
-	// 构建 JSON 数据
 	QJsonObject jsonData;
-	jsonData["group_id"] = currentGroupId;
-
 	QJsonArray messageArray;
 
-	QJsonObject atMessage;
-	atMessage["type"] = "at";
-	atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };
-	messageArray.append(atMessage);
+	if (sendToWhere == SENDTOPRIVATE) {
+		jsonData["user_id"] = 3889015870;
+	}
+	else {
+		int currentGroupId = Celestian::getCurrentGroupId();
+		if (currentGroupId == -1) {
+			QMessageBox::warning(nullptr, "错误", "群组 ID 无效，请重试！");
+			return;
+		}
+		jsonData["group_id"] = currentGroupId;
+
+		QJsonObject atMessage;
+		atMessage["type"] = "at";
+		atMessage["data"] = QJsonObject{ {"qq", "3889015870"} };
+		messageArray.append(atMessage);
+	}
 
 	QJsonObject textMessage;
 	textMessage["type"] = "text";
-	textMessage["data"] = QJsonObject{ {"text", textContent} };  // 传入自定义文本内容
+	textMessage["data"] = QJsonObject{ {"text", textContent} };
 	messageArray.append(textMessage);
 
 	jsonData["message"] = messageArray;
 
-	// 创建局部 QNetworkAccessManager
-	QNetworkAccessManager* networkManager = new QNetworkAccessManager();
-	QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonData).toJson());
+	QNetworkRequest request(apiUrl);
+	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-	// 处理响应
-	QObject::connect(reply, &QNetworkReply::finished, [reply, networkManager]() {
+	QNetworkReply* reply = getNetworkManagerInstance()->post(request, QJsonDocument(jsonData).toJson());
+
+	QObject::connect(reply, &QNetworkReply::finished, [reply]() {
 		QByteArray responseData = reply->readAll();
 		qDebug() << "Server response:" << responseData;
 
@@ -57,6 +67,5 @@ void JsonRequestHandler::sendJsonRequest(const QString& textContent)
 		}
 
 		reply->deleteLater();
-		networkManager->deleteLater();
 		});
 }

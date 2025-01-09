@@ -1,12 +1,18 @@
 // Created by Eternity_boundary on Jan 4,2025
 #pragma once
+#define _CELESTIAN_DISABLED_WARNING 26813 26495 4820 4458 5045
+#pragma warning(push)
+#pragma warning(disable:_CELESTIAN_DISABLED_WARNING)
 #include <QMainWindow>
 #include <QNetworkAccessManager>
 #include <QJsonArray>
 #include <QTcpServer>
 #include <QNetworkReply>
 #include <QTableWidgetItem>
-#define _CELESTIAN_DISABLED_WARNING 26813 26495
+#pragma warning(pop)
+
+constexpr auto SENDTOGROUP = false;
+constexpr auto SENDTOPRIVATE = true;
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class CelestianClass; }
@@ -19,6 +25,9 @@ class Celestian : public QMainWindow
 public:
 	explicit Celestian(QWidget* parent = nullptr);
 	~Celestian();
+
+	Celestian(const Celestian&) = delete;
+	Celestian& operator=(const Celestian&) = delete;
 
 	static qint64 getUserId();
 	static int getCurrentGroupId();
@@ -37,6 +46,7 @@ private slots:
 	void onPackButtonClicked();
 	void onactButtonClicked();
 	void onHarvestDataReceived(const QString& data);
+	void onSignButtonClicked();
 
 private:
 	void startHttpServer();

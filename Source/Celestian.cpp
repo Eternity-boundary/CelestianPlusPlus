@@ -35,6 +35,7 @@ Celestian::Celestian(QWidget* parent)
 	connect(ui->pack, &QPushButton::clicked, this, &Celestian::onPackButtonClicked);
 	connect(ui->act, &QPushButton::clicked, this, &Celestian::onactButtonClicked);
 	connect(this, &Celestian::dataReceived, this, &Celestian::onHarvestDataReceived);
+	connect(ui->signIn, &QPushButton::clicked, this, &Celestian::onSignButtonClicked);
 	connect(heartBeatTimer, &QTimer::timeout, this, [this]() {
 		qDebug() << "heartBeat timed out";
 		online_status_flag = false;
@@ -353,7 +354,7 @@ void Celestian::onactButtonClicked()
 	hasUpdatedTime = false;
 
 	// 发送“采药”请求
-	JsonRequestHandler::sendJsonRequest("采药");
+	JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "采药");
 	QMessageBox::information(this, "提示", "已发送采药请求，请等待时间结束...");
 }
 // TODO: 添加自动游历与完成
@@ -380,7 +381,7 @@ void Celestian::onHarvestDataReceived(const QString& data)
 
 			// 设置定时器，在 harvestTime 毫秒后发送“采药归来”请求
 			QTimer::singleShot(harvestTime, this, []() {
-				JsonRequestHandler::sendJsonRequest("采药归来");
+				JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "采药归来");
 				});
 
 			QMessageBox::information(this, "提示", QString("采药已完成，%1分钟后将发送‘采药归来’请求").arg(harvestTime / 60000));
@@ -391,6 +392,22 @@ void Celestian::onHarvestDataReceived(const QString& data)
 			QMessageBox::warning(this, "提示", "采药次数已达到10次");
 		}
 	}
+}
+
+void Celestian::onSignButtonClicked()
+{
+	JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "签到");
+	QTimer::singleShot(500, []() {
+		JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "鱼饵兑换");
+		});
+
+	QTimer::singleShot(500, []() {
+		JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "宗门丹药领取");
+		});
+
+	QTimer::singleShot(500, []() {
+		JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "灵田收取");
+		});
 }
 
 void Celestian::onPackButtonClicked()

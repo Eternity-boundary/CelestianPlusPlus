@@ -104,7 +104,7 @@ void backpackMan::onDataReceived(const QString& data)
 
 void backpackMan::onRefreshPageClicked()
 {
-	JsonRequestHandler::sendJsonRequest("药材背包");
+	JsonRequestHandler::sendJsonRequest(SENDTOPRIVATE, "药材背包");
 }
 
 qint16 pageCount = 1;
@@ -119,7 +119,7 @@ void backpackMan::onPreviousPageClicked()
 	QTableWidget* table = ui.tableWidget;
 	table->clearContents();
 	table->setRowCount(0);
-	JsonRequestHandler::sendJsonRequest("药材背包 " + QString::number(pageCount));
+	JsonRequestHandler::sendJsonRequest(SENDTOPRIVATE, "药材背包 " + QString::number(pageCount));
 }
 
 void backpackMan::onNextPageClicked()
@@ -128,7 +128,7 @@ void backpackMan::onNextPageClicked()
 	table->clearContents();
 	table->setRowCount(0);
 	pageCount++;
-	JsonRequestHandler::sendJsonRequest("药材背包 " + QString::number(pageCount));
+	JsonRequestHandler::sendJsonRequest(SENDTOPRIVATE, "药材背包 " + QString::number(pageCount));
 }
 
 void backpackMan::onSellButtonClicked()
@@ -143,7 +143,7 @@ void backpackMan::onSellButtonClicked()
 		return;
 	}
 
-	JsonRequestHandler::sendJsonRequest("坊市刷新" + selectedHerbName);
+	JsonRequestHandler::sendJsonRequest(SENDTOPRIVATE, "坊市刷新" + selectedHerbName);
 	// TODO: 添加检测到售出上限溢出提示
 	QTimer::singleShot(2000, this, [this]() {
 		QMessageBox msgBox;
@@ -153,7 +153,7 @@ void backpackMan::onSellButtonClicked()
 		msgBox.setDefaultButton(QMessageBox::Cancel);
 		int ret = msgBox.exec();
 		if (ret == QMessageBox::Yes) {
-			JsonRequestHandler::sendJsonRequest("坊市上架 " + selectedHerbName + " " + QString::number(selectedPrice));
+			JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "坊市上架 " + selectedHerbName + " " + QString::number(selectedPrice));
 		}
 		});
 }
