@@ -5,6 +5,7 @@
 #include "Headers\JsonRequestHandler.h"
 #include "Headers\LogProcessor.h"
 #include "ui_Celestian.h"
+#include "Headers\market.h"
 #pragma warning(push)
 #pragma warning(disable: _CELESTIAN_DISABLED_WARNING)
 #include <QDebug>
@@ -40,6 +41,7 @@ Celestian::Celestian(QWidget* parent)
 	connect(this, &Celestian::dataReceived, this, &Celestian::onHarvestDataReceived);
 	connect(ui->signIn, &QPushButton::clicked, this, &Celestian::onSignButtonClicked);
 	connect(ui->bank, &QPushButton::clicked, this, &Celestian::onBankButtonClicked);
+	connect(ui->market, &QPushButton::clicked, this, &Celestian::onMarketButtonClicked);
 	connect(heartBeatTimer, &QTimer::timeout, this, [this]() {
 		qDebug() << "heartBeat timed out";
 		online_status_flag = false;
@@ -493,16 +495,32 @@ void Celestian::onPackButtonClicked()
 		return;
 	}
 
-	auto backpackWindow = std::make_unique<backpackMan>(this);
+	backpackMan* backpackWindow = new backpackMan(this);
 	backpackWindow->setGroupId(currentGroupId);
 
-	// Connect signal and slot properly
-	connect(this, &Celestian::dataReceived, backpackWindow.get(), &backpackMan::onDataReceived);
+	connect(this, &Celestian::dataReceived, backpackWindow, &backpackMan::onDataReceived);
 
 	backpackWindow->setAttribute(Qt::WA_DeleteOnClose);
 	backpackWindow->exec();
 }
+
 void backpackMan::setGroupId(int groupId)
 {
 	currentGroupId = groupId;
+}
+
+void Celestian::onMarketButtonClicked()
+{
+	if (currentGroupId == -1) {
+		QMessageBox::warning(this, "提示", "请先双击选择一个群组！");
+		return;
+	}
+
+	market* marketWindow = new market(this);
+	marketWindow->setGroupId(currentGroupId);
+
+	connect(this, &Celestian::dataReceived, marketWindow, &market::onMarketDataReceived);
+
+	marketWindow->setAttribute(Qt::WA_DeleteOnClose);
+	marketWindow->exec();
 }

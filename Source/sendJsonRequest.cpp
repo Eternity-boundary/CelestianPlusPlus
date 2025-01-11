@@ -49,7 +49,7 @@ void JsonRequestHandler::sendJsonRequest(const bool sendToWhere, const QString& 
 	QNetworkRequest request(apiUrl);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-	QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonData).toJson());
+	QNetworkReply* reply = getNetworkManager()->post(request, QJsonDocument(jsonData).toJson());
 
 	QObject::connect(reply, &QNetworkReply::finished, [reply]() {
 		QByteArray responseData = reply->readAll();

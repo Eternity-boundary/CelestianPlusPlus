@@ -10,6 +10,7 @@
 #include <QNetworkReply>
 #include <QTableWidgetItem>
 #pragma warning(pop)
+#include "Headers\backPackMan.h"
 
 constexpr auto SENDTOGROUP = false;
 constexpr auto SENDTOPRIVATE = true;
@@ -44,6 +45,7 @@ private slots:
 	void onTableItemDoubleClicked(QTableWidgetItem* item);
 	void onPracticeButtonClicked();
 	void onPackButtonClicked();
+	void onMarketButtonClicked();
 	void onActButtonClicked();
 	void onHarvestDataReceived(const QString& data);
 	void onSignButtonClicked();
@@ -63,6 +65,7 @@ private:
 	int currentCount = 0;
 	int maxCount = 10;
 	bool isRunning = false;
+
 	QTimer* timer = nullptr;
 	QTimer* heartBeatTimer;
 

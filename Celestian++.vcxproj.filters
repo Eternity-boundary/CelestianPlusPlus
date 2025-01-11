@@ -21,6 +21,12 @@
       <UniqueIdentifier>{639EADAA-A684-42e4-A9AD-28FC9BCB8F7C}</UniqueIdentifier>
       <Extensions>ts</Extensions>
     </Filter>
+    <Filter Include="Source Files\Source">
+      <UniqueIdentifier>{0b4352f5-4907-4caa-8153-7ab423167f8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Header">
+      <UniqueIdentifier>{fe448bbc-4e08-40b8-8a49-7dee40322e51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="Celestian.qrc">
@@ -38,43 +44,52 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\backPackMan.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\practice.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\sendJsonRequest.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Celestian.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\practice.cpp">
+      <Filter>Source Files\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sendJsonRequest.cpp">
+      <Filter>Source Files\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\market.cpp">
+      <Filter>Source Files\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="Headers\backPackMan.h">
+      <Filter>Header Files\Header</Filter>
+    </QtMoc>
     <QtMoc Include="Headers\Celestian.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Header</Filter>
     </QtMoc>
     <QtMoc Include="Headers\Practice.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Header</Filter>
     </QtMoc>
-    <QtMoc Include="Headers\backPackMan.h">
-      <Filter>Header Files</Filter>
+    <QtMoc Include="Headers\market.h">
+      <Filter>Header Files\Header</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="backpack.ui">
       <Filter>Form Files</Filter>
     </QtUic>
+    <QtUic Include="market.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\JsonRequestHandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Header</Filter>
     </ClInclude>
     <ClInclude Include="Headers\LogProcessor.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

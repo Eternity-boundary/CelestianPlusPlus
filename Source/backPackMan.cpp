@@ -21,6 +21,7 @@ backpackMan::backpackMan(QWidget* parent)
 {
 	ui.setupUi(this);
 	ui.tableWidget->setColumnCount(2);
+	setWindowTitle("背包管理");
 
 	// 设置表头
 	QStringList headers;
@@ -46,15 +47,17 @@ void backpackMan::onDataReceived(const QString& data)
 	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);
 	qDebug() << "清洗后的数据：" << cleanedData;
 
-	//额外处理：获取价格
+	// 额外处理：获取价格
 	QString selectedPriceStr;  // 选中的药材价格字符串
 	QRegularExpression priceRegex(R"(价格:(\d{1,4}(?:\.\d{1,2})?[万亿]))");
 	QRegularExpressionMatch priceMatch = priceRegex.match(cleanedData);
 	if (priceMatch.hasMatch()) {
 		selectedPriceStr = priceMatch.captured(1);           // 提取价格字符串
 		selectedPrice = convertPrice(selectedPriceStr);      // 转换价格为整数
+
+		// 修改显示为万单位，保留两位小数
 		qDebug() << "提取的价格：" << selectedPriceStr;
-		qDebug() << "转换后的价格：" << selectedPrice;
+		qDebug() << "转换后的价格：" << QString::number(selectedPrice / 1e4, 'f', 2) << "万";
 	}
 
 	// 2. 进一步清理噪音（移除常见无关部分）
@@ -150,13 +153,16 @@ void backpackMan::onSellButtonClicked()
 	// TODO: 添加检测到售出上限溢出提示
 	QTimer::singleShot(2000, this, [this]() {
 		QMessageBox msgBox;
-		msgBox.setWindowTitle("提示");
-		msgBox.setText("选择的药材为 " + selectedHerbName + "，价格为 " + QString::number(selectedPrice) + "，是否确认上架？");
-		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-		msgBox.setDefaultButton(QMessageBox::Cancel);
+		msgBox.setWindowTitle("确认上架");
+		msgBox.setText("选择的药材为：" + selectedHerbName + "\n价格：" + QString::number(selectedPrice / 1e4, 'f', 2) + "万\n是否确认上架？");
+		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+		msgBox.setDefaultButton(QMessageBox::No);
 		int ret = msgBox.exec();
+
 		if (ret == QMessageBox::Yes) {
+			// 发送“坊市上架”请求，价格使用整数形式
 			JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "坊市上架 " + selectedHerbName + " " + QString::number(selectedPrice));
+			qDebug() << "已发送坊市上架请求：" << selectedHerbName << " " << selectedPrice;
 		}
 		});
 }

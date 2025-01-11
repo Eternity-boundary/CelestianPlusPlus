@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source\backPackMan.cpp" />
+    <ClCompile Include="Source\market.cpp" />
     <ClCompile Include="Source\practice.cpp" />
     <ClCompile Include="Source\sendJsonRequest.cpp" />
     <None Include="cpp.hint" />
@@ -134,12 +135,14 @@
     <ClCompile Include="Source\main.cpp" />
     <None Include="Celestian++.ico" />
     <QtUic Include="backpack.ui" />
+    <QtUic Include="market.ui" />
     <ResourceCompile Include="Celestian++.rc" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="Headers\Practice.h" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="Headers\market.h" />
     <QtMoc Include="Headers\backPackMan.h" />
     <ClInclude Include="Headers\JsonRequestHandler.h" />
     <ClInclude Include="Headers\LogProcessor.h" />
