@@ -3,6 +3,10 @@
 
 #include <QString>
 
+namespace {
+	std::unique_ptr<QNetworkAccessManager> networkManager = std::make_unique<QNetworkAccessManager>();
+}
+
 class JsonRequestHandler
 {
 public:

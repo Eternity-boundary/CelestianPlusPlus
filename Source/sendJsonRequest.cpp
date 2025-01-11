@@ -13,13 +13,6 @@
 #include <QNetworkRequest>
 #pragma warning(pop)
 
-namespace {
-	QNetworkAccessManager* getNetworkManagerInstance() {
-		static QNetworkAccessManager networkManager;
-		return &networkManager;
-	}
-}
-
 void JsonRequestHandler::sendJsonRequest(const bool sendToWhere, const QString& textContent)
 {
 	QUrl apiUrl = (sendToWhere == SENDTOPRIVATE)
@@ -36,7 +29,7 @@ void JsonRequestHandler::sendJsonRequest(const bool sendToWhere, const QString& 
 		int currentGroupId = Celestian::getCurrentGroupId();
 		if (currentGroupId == -1) {
 			QMessageBox::warning(nullptr, "错误", "群组 ID 无效，请重试！");
-			return;
+			return; // Added return to prevent further execution
 		}
 		jsonData["group_id"] = currentGroupId;
 
@@ -56,7 +49,7 @@ void JsonRequestHandler::sendJsonRequest(const bool sendToWhere, const QString& 
 	QNetworkRequest request(apiUrl);
 	request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
 
-	QNetworkReply* reply = getNetworkManagerInstance()->post(request, QJsonDocument(jsonData).toJson());
+	QNetworkReply* reply = networkManager->post(request, QJsonDocument(jsonData).toJson());
 
 	QObject::connect(reply, &QNetworkReply::finished, [reply]() {
 		QByteArray responseData = reply->readAll();
@@ -64,6 +57,7 @@ void JsonRequestHandler::sendJsonRequest(const bool sendToWhere, const QString& 
 
 		if (reply->error() != QNetworkReply::NoError) {
 			QMessageBox::warning(nullptr, "错误", "发送请求失败：" + reply->errorString());
+			return; // Added return to handle errors properly
 		}
 
 		reply->deleteLater();

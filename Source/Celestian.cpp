@@ -357,32 +357,30 @@ void Celestian::onActButtonClicked()
 
 		QMessageBox::information(this, "提示", "已发送采药请求，请等待时间结束...");
 
-		// 初始化计数器和最大次数
 		currentCount = 1;
 		maxCount = 10;
+		isRunning = true;
+		ui->act->setText("停止采药");
 
-		// 显示并初始化进度条
 		ui->progressBar->setVisible(true);
 		ui->progressBar->setValue(currentCount);
 		ui->progressBar->setMaximum(maxCount);
 		ui->progressBar->setFormat(QString("%1/%2").arg(currentCount).arg(maxCount));
-		ui->progressBar->setTextVisible(true);  // 显示文本
+		ui->progressBar->setTextVisible(true);
 
-		// 立即发送第一次“采药”请求
 		hasUpdatedTime = false;
 		JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "采药");
 
-		// 创建定时器
 		timer = new QTimer(this);
-
 		connect(timer, &QTimer::timeout, this, [this]() {
 			hasUpdatedTime = false;
 			JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "采药");
 			currentCount++;
 
-			// 更新进度条
-			ui->progressBar->setValue(currentCount);
-			ui->progressBar->setFormat(QString("%1/%2").arg(currentCount).arg(maxCount));
+			if (currentCount <= maxCount) {
+				ui->progressBar->setValue(currentCount);
+				ui->progressBar->setFormat(QString("%1/%2").arg(currentCount).arg(maxCount));
+			}
 
 			if (currentCount >= maxCount) {
 				timer->stop();
@@ -390,26 +388,29 @@ void Celestian::onActButtonClicked()
 				timer = nullptr;
 				isRunning = false;
 				ui->act->setText("启动采药");
-
 				ui->progressBar->setVisible(false);
-
 				QMessageBox::information(this, "提示", "采药任务已完成！");
 			}
 			});
-		QTimer::singleShot(3000, [this]() {
-			if (objHarvestTime)
-			{
-				timer->start(*objHarvestTime + 65000);
-				isRunning = true;
-				ui->act->setText("停止采药");
-				delete objHarvestTime;
-			}
-			else
-			{
-				QMessageBox::warning(this, "警告", "未获取到时间信息");
-				ui->progressBar->setVisible(false);
-			}
-			});
+
+		if (objHarvestTime) {
+			timer->start(*objHarvestTime + 65000);
+		}
+		else {
+			QTimer::singleShot(3000, [this]() {
+				if (objHarvestTime) {
+					timer->start(*objHarvestTime + 65000);
+					ui->act->setText("停止采药");
+					objHarvestTime.reset();
+				}
+				else {
+					QMessageBox::warning(this, "警告", "未获取到时间信息");
+					isRunning = false;
+					ui->act->setText("启动采药");
+					ui->progressBar->setVisible(false);
+				}
+				});
+		}
 	}
 	else {
 		if (timer && timer->isActive()) {
@@ -418,33 +419,31 @@ void Celestian::onActButtonClicked()
 			timer = nullptr;
 			QMessageBox::information(this, "提示", "采药任务已手动停止！");
 		}
-
 		isRunning = false;
 		ui->act->setText("启动采药");
-
 		ui->progressBar->setVisible(false);
 	}
 }
 
 void Celestian::onHarvestDataReceived(const QString& data)
 {
-	int harvestTimes = 0;
-	// 检查是否已更新过时间，若已更新则直接返回
+	if (!isRunning) return;
 	if (hasUpdatedTime) return;
 
-	// 1. 使用工具类清洗数据
+	// 使用工具类清洗数据
 	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);
 	qDebug() << "清洗后的数据：" << cleanedData;
-	hasUpdatedTime = true;  // 标记已更新
 
-	// 2. 使用正则表达式匹配时间信息
+	// 使用正则表达式匹配时间信息
 	QRegularExpression regex(R"(开始采药(\d+)分钟后采药归来)");
 	QRegularExpressionMatch match = regex.match(cleanedData);
+
 	if (match.hasMatch()) {
-		if (harvestTimes <= 10)
-		{
-			harvestTime = match.captured(1).toInt() * 60000;  // 将时间转换为毫秒
-			objHarvestTime = new int(harvestTime);
+		if (harvestTimes < 10) {
+			harvestTime = match.captured(1).toInt() * 60000;  // 转换为毫秒
+			objHarvestTime.reset(new int(harvestTime));
+			hasUpdatedTime = true;
+
 			qDebug() << "提取的时间信息（毫秒）：" << harvestTime;
 
 			// 设置定时器，在 harvestTime 毫秒后发送“采药归来”请求
@@ -456,10 +455,13 @@ void Celestian::onHarvestDataReceived(const QString& data)
 			QMessageBox::information(this, "提示", QString("采药已完成，%1分钟后将发送‘采药归来’请求").arg(harvestTime / 60000));
 			harvestTimes++;
 		}
-		else
-		{
-			QMessageBox::warning(this, "提示", "采药次数已达到10次");
+		else {
+			QMessageBox::warning(this, "提示", "采药次数已达到 10 次，无法继续采药！");
 		}
+	}
+	else {
+		QMessageBox::warning(this, "提示", "未提取到有效的时间信息！请确认你的所在位置是否有可采集药材然后再次启动采药！");
+		hasUpdatedTime = true;
 	}
 }
 
@@ -491,11 +493,11 @@ void Celestian::onPackButtonClicked()
 		return;
 	}
 
-	backpackMan* backpackWindow = new backpackMan(this);
-	backpackWindow->setGroupId(currentGroupId);  // 传递当前群组 ID
+	auto backpackWindow = std::make_unique<backpackMan>(this);
+	backpackWindow->setGroupId(currentGroupId);
 
-	// 连接主界面的信号与子窗口的槽函数
-	connect(this, &Celestian::dataReceived, backpackWindow, &backpackMan::onDataReceived);
+	// Connect signal and slot properly
+	connect(this, &Celestian::dataReceived, backpackWindow.get(), &backpackMan::onDataReceived);
 
 	backpackWindow->setAttribute(Qt::WA_DeleteOnClose);
 	backpackWindow->exec();

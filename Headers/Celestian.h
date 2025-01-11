@@ -55,17 +55,18 @@ private:
 	void setUserId(qint64 id);
 	void populateTable(const QJsonArray& data);
 	bool updateStatusIndicator(bool isOnline);
-	int harvestTime = -1;  // 存储提取到的时间（以分钟为单位）
+	int harvestTime = 0;
 	bool hasUpdatedTime = false;
 	bool online_status_flag = false;
-	int* objHarvestTime = nullptr;
-	QTimer* timer;      // 定时器
-	int currentCount;   // 当前触发次数
-	int maxCount;       // 最大触发次数
-	bool isRunning;		// 标志当前是否在运行
+	int harvestTimes = 0;
+	std::unique_ptr<int> objHarvestTime;
+	int currentCount = 0;
+	int maxCount = 10;
+	bool isRunning = false;
+	QTimer* timer = nullptr;
 	QTimer* heartBeatTimer;
 
-	QString processServerReport(const QByteArray& requestData);  // 封装的解析函数
+	QString processServerReport(const QByteArray& requestData);
 
 	Ui::CelestianClass* ui;
 	QNetworkAccessManager* networkManager;
