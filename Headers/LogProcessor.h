@@ -9,7 +9,7 @@ class LogProcessor
 {
 public:
 	// 处理日志消息的静态函数
-	static QString processLogMessage(const QString& rawMessage, qint64 currentUserId)
+	static QString processLogMessage(const QString& rawMessage, qint64 currentId)
 	{
 		QString message = rawMessage;
 
@@ -41,7 +41,7 @@ public:
 		message.replace(QRegularExpression(R"(@[\w\\_]+)"), "");
 
 		// 10. 移除与当前用户无关的 @ 信息
-		QString atPattern = QString(R"(\[CQ:at,qq=%1[^\]]*\])").arg(currentUserId);
+		QString atPattern = QString(R"(\[CQ:at,qq=%1[^\]]*\])").arg(currentId);
 		message.remove(QRegularExpression(atPattern));
 
 		// 11. 移除多余空格和换行符

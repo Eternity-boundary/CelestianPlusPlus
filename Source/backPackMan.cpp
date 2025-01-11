@@ -43,7 +43,7 @@ backpackMan::backpackMan(QWidget* parent)
 void backpackMan::onDataReceived(const QString& data)
 {
 	// 1. 使用工具类清洗数据
-	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);//This is a bug, but why does it work?
+	QString cleanedData = LogProcessor::processLogMessage(data, currentGroupId);
 	qDebug() << "清洗后的数据：" << cleanedData;
 
 	//额外处理：获取价格
@@ -104,6 +104,9 @@ void backpackMan::onDataReceived(const QString& data)
 
 void backpackMan::onRefreshPageClicked()
 {
+	QTableWidget* table = ui.tableWidget;
+	table->clearContents();
+	table->setRowCount(0);
 	JsonRequestHandler::sendJsonRequest(SENDTOPRIVATE, "药材背包");
 }
 

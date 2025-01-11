@@ -39,14 +39,15 @@ signals:
 	void dataReceived(const QString& data);
 
 private slots:
-	void on_pushButton_clicked();
+	void onPushButtonClicked();
 	void handleApiResponse(QNetworkReply* reply);
 	void onTableItemDoubleClicked(QTableWidgetItem* item);
 	void onPracticeButtonClicked();
 	void onPackButtonClicked();
-	void onactButtonClicked();
+	void onActButtonClicked();
 	void onHarvestDataReceived(const QString& data);
 	void onSignButtonClicked();
+	void onBankButtonClicked();
 
 private:
 	void startHttpServer();
@@ -57,6 +58,11 @@ private:
 	int harvestTime = -1;  // 存储提取到的时间（以分钟为单位）
 	bool hasUpdatedTime = false;
 	bool online_status_flag = false;
+	int* objHarvestTime = nullptr;
+	QTimer* timer;      // 定时器
+	int currentCount;   // 当前触发次数
+	int maxCount;       // 最大触发次数
+	bool isRunning;		// 标志当前是否在运行
 	QTimer* heartBeatTimer;
 
 	QString processServerReport(const QByteArray& requestData);  // 封装的解析函数
