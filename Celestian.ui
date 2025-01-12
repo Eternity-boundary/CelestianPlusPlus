@@ -58,8 +58,13 @@ QListWidget::item:selected {
 QLabel#statusIndicator {
     background-color: #A3BE8C;  /* 绿色表示正常运行 */
     border-radius: 8px;
-    width: 16px;
-    height: 16px;
+    width: 24px;
+    height: 24px;
+}
+
+QLabel {
+    font-size: 20px;  /* 设置为 16px */
+    color: #ECEFF4;   /* 浅灰色字体 */
 }
 </string>
   </property>
@@ -242,6 +247,12 @@ border-radius: 10px;
       <width>121</width>
       <height>26</height>
      </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>121</width>
+      <height>26</height>
+     </size>
     </property>
     <property name="font">
      <font>
