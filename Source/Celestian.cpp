@@ -449,8 +449,10 @@ void Celestian::onHarvestDataReceived(const QString& data)
 			qDebug() << "提取的时间信息（毫秒）：" << harvestTime;
 
 			// 设置定时器，在 harvestTime 毫秒后发送“采药归来”请求
-			QTimer::singleShot(harvestTime, this, []() {
+			QTimer::singleShot(harvestTime, []() {
 				JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "采药归来");
+				});
+			QTimer::singleShot(500, []() {
 				JsonRequestHandler::sendJsonRequest(SENDTOGROUP, "外出游历");
 				});
 

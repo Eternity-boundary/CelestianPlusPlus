@@ -13,6 +13,56 @@
   <property name="windowTitle">
    <string>Celestian</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">/* 主窗口背景 */
+QWidget {
+    background-color: #2E3440;  /* 深灰色背景 */
+    color: #ECEFF4;             /* 浅灰色文字 */
+    font-family: &quot;Segoe UI&quot;, &quot;Microsoft YaHei&quot;, Arial;
+    font-size: 12px;
+}
+
+/* 按钮样式 */
+QPushButton {
+    background-color: #4C566A;  /* 中灰色按钮背景 */
+    color: #ECEFF4;             /* 浅灰色按钮文字 */
+    border: 1px solid #81A1C1;  /* 边框颜色 */
+    border-radius: 8px;         /* 圆角 */
+    padding: 8px 16px;          /* 内边距 */
+}
+QPushButton:hover {
+    background-color: #5E81AC;  /* 鼠标悬停时变为蓝色 */
+    border-color: #88C0D0;      /* 边框颜色变浅 */
+}
+QPushButton:pressed {
+    background-color: #3B4252;  /* 按下时变为深灰色 */
+}
+
+/* 列表样式 */
+QListWidget {
+    background-color: #3B4252;  /* 列表背景色 */
+    border: 1px solid #4C566A;  /* 边框 */
+    color: #ECEFF4;             /* 列表文字颜色 */
+    padding: 4px;
+    border-radius: 4px;
+}
+QListWidget::item {
+    padding: 8px;               /* 列表项内边距 */
+}
+QListWidget::item:selected {
+    background-color: #5E81AC;  /* 选中项背景色 */
+    color: #ECEFF4;             /* 选中项文字颜色 */
+}
+
+/* 状态指示器 */
+QLabel#statusIndicator {
+    background-color: #A3BE8C;  /* 绿色表示正常运行 */
+    border-radius: 8px;
+    width: 16px;
+    height: 16px;
+}
+</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
@@ -195,8 +245,8 @@ border-radius: 10px;
     </property>
     <property name="font">
      <font>
-      <family>Microsoft YaHei</family>
-      <pointsize>14</pointsize>
+      <family>Segoe UI</family>
+      <pointsize>-1</pointsize>
      </font>
     </property>
     <property name="text">

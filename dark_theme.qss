@@ -1,0 +1,26 @@
+/* QMessageBox 样式 */
+QMessageBox {
+    background-color: #2E3440;
+    color: #ECEFF4;
+    font-family: "Segoe UI", "Microsoft YaHei", Arial;
+    font-size: 12px;
+    border: 1px solid #4C566A;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+QMessageBox QPushButton {
+    background-color: #4C566A;
+    color: #ECEFF4;
+    border: 1px solid #81A1C1;
+    border-radius: 6px;
+    padding: 6px 12px;
+    min-width: 70px;
+}
+QMessageBox QPushButton:hover {
+    background-color: #5E81AC;
+    border-color: #88C0D0;
+}
+QMessageBox QPushButton:pressed {
+    background-color: #3B4252;
+}
