@@ -11,7 +11,7 @@ To get started with Delta Executor, follow these simple steps:
 **Keywords:** Roblox executor, script executor, Roblox hacks, Roblox mods, gaming tools, script engine, Roblox enhancements, Roblox modding 2024.
 
 
-![Delta Executor Preview](/assets/Delta.png)
+![Delta Executor Preview](/assets/Delta.jpg)
 
 ## Table of Contents
 - [Introduction](#introduction)
